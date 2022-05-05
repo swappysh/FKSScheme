@@ -8,7 +8,7 @@ K = {"A", "ABOUT", "AN", "AND", "ARE", "AS", "AT", "BE", "BOY", "BUT", "BY", "FO
 def computeValue(x):
   res = 0
   A_unicode = ord('A')
-  for c in reversed(x):
+  for c in x:
     # print(c)
     res = res * 26 + (ord(c) - A_unicode + 1)
   
@@ -17,11 +17,14 @@ def computeValue(x):
 def computeHk(k, x):
   return (((k*x) % 12356633) % 40)
 
+b = defaultdict(int)
+
 def isGood(k):
   n = 40
-  b = defaultdict(int)
+  b.clear()
   for x in K:
     # print(x, computeValue(x), computeHk(k, computeValue(x)))
+    # print(x, computeValue(x))
     b[computeHk(k, computeValue(x))] += 1
 
   # print(b)
@@ -30,8 +33,34 @@ def isGood(k):
   for k, v in b.items():
     cons += (v*(v-1))/2
 
-  return cons < n
+  return b, cons < n
 
-for i in range(1, 41):
-  print(i, ":", isGood(i))
-# isGood(1)
+def isPerfect(k, i):
+  if b[i] == 0:
+    return False
+
+  count = 0
+  for x in K:
+    if (((k*computeValue(x)) % 12356633) % (b[i]*b[i])) == i:
+      count += 1
+
+  return count == 1
+
+# for k in range(1, 41):
+#   b, isGoodK = isGood(k)
+#   if isGoodK:
+#     print(k, ":", isGoodK)
+#   for i in range(40):
+#     if isPerfect(k, i):
+#       print("isPerfect -> k:", k, " i:", i, " ", isPerfect(k, i))
+
+b, isGoodK = isGood(1)
+print(isGoodK, b)
+
+# for k0 in range(1, 41):
+#   b, isGoodK = isGood(k0)
+#   for i in range(40):
+#     k = 1
+#     while not isPerfect(k, i) and k < 100:
+#       k += 1
+#     print("isPerfect -> k:", k, " i:", i, " ", isPerfect(k, i))
